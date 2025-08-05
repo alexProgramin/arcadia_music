@@ -15,7 +15,7 @@ class SupabaseConfig {
   static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
   
   // URL de redirección para OAuth
-  static const String redirectUrl = 'io.supabase.flutter://login-callback/';
+  static const String redirectUrl = 'com.arcadia_music://login-callback';
 }
 
 // CÓMO OBTENER LAS CREDENCIALES:
@@ -31,7 +31,7 @@ class SupabaseConfig {
 // 1. Ve a Authentication > Providers en Supabase
 // 2. Habilita Google provider
 // 3. Configura las credenciales de Google OAuth
-// 4. Agrega la URL de redirección: io.supabase.flutter://login-callback/
+// 4. Agrega la URL de redirección: com.arcadia_music://login-callback
 //
 // CONFIGURACIÓN DE LA BASE DE DATOS:
 //

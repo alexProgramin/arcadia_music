@@ -3,7 +3,6 @@ class User {
   final String email;
   final String? name;
   final String? avatarUrl;
-  final bool isAdmin;
   final DateTime createdAt;
 
   User({
@@ -11,7 +10,6 @@ class User {
     required this.email,
     this.name,
     this.avatarUrl,
-    this.isAdmin = false,
     required this.createdAt,
   });
 
@@ -21,7 +19,6 @@ class User {
       email: json['email'] ?? '',
       name: json['name'],
       avatarUrl: json['avatar_url'],
-      isAdmin: json['is_admin'] ?? false,
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }
@@ -32,7 +29,6 @@ class User {
       'email': email,
       'name': name,
       'avatar_url': avatarUrl,
-      'is_admin': isAdmin,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -42,7 +38,6 @@ class User {
     String? email,
     String? name,
     String? avatarUrl,
-    bool? isAdmin,
     DateTime? createdAt,
   }) {
     return User(
@@ -50,7 +45,6 @@ class User {
       email: email ?? this.email,
       name: name ?? this.name,
       avatarUrl: avatarUrl ?? this.avatarUrl,
-      isAdmin: isAdmin ?? this.isAdmin,
       createdAt: createdAt ?? this.createdAt,
     );
   }

@@ -1,4 +1,4 @@
-package com.example.arcadia_music
+package com.arcadia_music
 
 import io.flutter.embedding.android.FlutterActivity
 

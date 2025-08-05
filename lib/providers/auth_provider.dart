@@ -35,17 +35,32 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> signUp({
+  Future<bool> signUp({
     required String email,
     required String password,
+    String? name,
   }) async {
     _setLoading(true);
     _clearError();
 
     try {
-      await SupabaseService.signUp(email: email, password: password);
+      final response = await SupabaseService.signUp(
+        email: email,
+        password: password,
+        name: name,
+      );
+      
+      if (response.user != null) {
+        // Actualizar el perfil del usuario con el nombre si se proporciona
+        if (name != null && name.isNotEmpty) {
+          await _updateUserProfile(response.user!.id, name);
+        }
+        return true;
+      }
+      return false;
     } catch (e) {
       _setError(e.toString());
+      return false;
     } finally {
       _setLoading(false);
     }
@@ -91,6 +106,20 @@ class AuthProvider extends ChangeNotifier {
       _setError(e.toString());
     } finally {
       _setLoading(false);
+    }
+  }
+
+  Future<void> _updateUserProfile(String userId, String name) async {
+    try {
+      await SupabaseService.client
+          .from('profiles')
+          .upsert({
+            'id': userId,
+            'name': name,
+            'updated_at': DateTime.now().toIso8601String(),
+          });
+    } catch (e) {
+      print('Error updating user profile: $e');
     }
   }
 

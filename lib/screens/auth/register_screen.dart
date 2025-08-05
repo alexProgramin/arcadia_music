@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/constants.dart';
+import '../../utils/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,6 +14,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -52,6 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -60,6 +63,8 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -118,6 +123,45 @@ class _RegisterScreenState extends State<RegisterScreen>
                       
                       const SizedBox(height: AppSpacing.xxl),
                       
+                      // Name Field
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBackground,
+                          borderRadius: AppBorderRadius.medium,
+                          boxShadow: AppShadows.cardShadow,
+                        ),
+                        child: TextFormField(
+                          controller: _nameController,
+                          keyboardType: TextInputType.name,
+                          style: AppTextStyles.body1,
+                          decoration: InputDecoration(
+                            labelText: l10n.get('fullName'),
+                            labelStyle: AppTextStyles.body2,
+                            prefixIcon: const Icon(
+                              Icons.person_outlined,
+                              color: AppColors.primary,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: AppBorderRadius.medium,
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: AppColors.cardBackground,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return l10n.get('pleaseEnterFullName');
+                            }
+                            if (value.trim().length < 2) {
+                              return l10n.get('nameMinLength');
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      
+                      const SizedBox(height: AppSpacing.md),
+                      
                       // Email Field
                       Container(
                         decoration: BoxDecoration(
@@ -130,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           keyboardType: TextInputType.emailAddress,
                           style: AppTextStyles.body1,
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: l10n.get('email'),
                             labelStyle: AppTextStyles.body2,
                             prefixIcon: const Icon(
                               Icons.email_outlined,
@@ -145,10 +189,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
+                              return l10n.get('pleaseEnterEmail');
                             }
                             if (!value.contains('@')) {
-                              return 'Please enter a valid email';
+                              return l10n.get('pleaseEnterValidEmail');
                             }
                             return null;
                           },
@@ -169,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           obscureText: _obscurePassword,
                           style: AppTextStyles.body1,
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            labelText: l10n.get('password'),
                             labelStyle: AppTextStyles.body2,
                             prefixIcon: const Icon(
                               Icons.lock_outlined,
@@ -197,10 +241,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
+                              return l10n.get('pleaseEnterPassword');
                             }
                             if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                              return l10n.get('passwordMinLength');
                             }
                             return null;
                           },
@@ -221,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           obscureText: _obscureConfirmPassword,
                           style: AppTextStyles.body1,
                           decoration: InputDecoration(
-                            labelText: 'Confirm Password',
+                            labelText: l10n.get('confirmPassword'),
                             labelStyle: AppTextStyles.body2,
                             prefixIcon: const Icon(
                               Icons.lock_outlined,
@@ -249,10 +293,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please confirm your password';
+                              return l10n.get('pleaseConfirmPassword');
                             }
                             if (value != _passwordController.text) {
-                              return 'Passwords do not match';
+                              return l10n.get('passwordsDoNotMatch');
                             }
                             return null;
                           },
@@ -304,45 +348,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                                         ),
                                       )
                                     : Text(
-                                        'REGISTER',
+                                        l10n.get('register'),
                                         style: AppTextStyles.button,
                                       ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      
-                      const SizedBox(height: AppSpacing.md),
-                      
-                      // Google Register Button
-                      Consumer<AuthProvider>(
-                        builder: (context, authProvider, child) {
-                          return OutlinedButton.icon(
-                            onPressed: authProvider.isLoading
-                                ? null
-                                : _handleGoogleRegister,
-                            icon: const Icon(
-                              Icons.g_mobiledata,
-                              color: AppColors.primary,
-                            ),
-                            label: Text(
-                              'Register with Google',
-                              style: AppTextStyles.button.copyWith(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.primary,
-                              side: const BorderSide(
-                                color: AppColors.primary,
-                                width: 2,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: AppSpacing.md,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: AppBorderRadius.medium,
                               ),
                             ),
                           );
@@ -385,7 +393,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already have an account? ',
+                            l10n.get('alreadyHaveAccount'),
                             style: AppTextStyles.body2,
                           ),
                           GestureDetector(
@@ -393,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               Navigator.pop(context);
                             },
                             child: Text(
-                              'Login',
+                              l10n.get('login'),
                               style: AppTextStyles.body2.copyWith(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -418,15 +426,53 @@ class _RegisterScreenState extends State<RegisterScreen>
   void _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.signUp(
+      final l10n = AppLocalizations.of(context);
+      
+      final success = await authProvider.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        name: _nameController.text.trim(),
       );
+      
+      if (success && mounted) {
+        // Mostrar notificación de registro exitoso
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.white,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.get('userRegisteredSuccessfully'),
+                    style: AppTextStyles.body2.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: AppBorderRadius.medium,
+            ),
+            margin: const EdgeInsets.all(AppSpacing.md),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        
+        // Navegar de vuelta al login después de un breve delay
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        });
+      }
     }
-  }
-
-  void _handleGoogleRegister() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.signInWithGoogle();
   }
 } 

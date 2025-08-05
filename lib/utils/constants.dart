@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   // Primary colors
-  static const Color primary = Color(0xFF00D4FF); // Cyan
-  static const Color secondary = Color(0xFF8A2BE2); // Purple
-  static const Color accent = Color(0xFF00FF88); // Neon green
+  static const Color primary = Color(0xFF00BCD4);
+  static const Color primaryDark = Color(0xFF0097A7);
+  static const Color primaryLight = Color(0xFFB2EBF2);
+  
+  // Secondary colors
+  static const Color secondary = Color(0xFF9C27B0);
+  static const Color secondaryDark = Color(0xFF7B1FA2);
+  static const Color secondaryLight = Color(0xFFE1BEE7);
   
   // Background colors
-  static const Color background = Color(0xFF0A0A0A); // Dark background
-  static const Color surface = Color(0xFF1A1A1A); // Slightly lighter surface
-  static const Color cardBackground = Color(0xFF2A2A2A); // Card background
+  static const Color background = Color(0xFF121212);
+  static const Color cardBackground = Color(0xFF1E1E1E);
+  static const Color surfaceBackground = Color(0xFF2D2D2D);
+  static const Color surface = Color(0xFF1A1A1A);
   
   // Text colors
-  static const Color textPrimary = Color(0xFFFFFFFF); // White
-  static const Color textSecondary = Color(0xFFB0B0B0); // Light gray
-  static const Color textMuted = Color(0xFF808080); // Gray
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFFB3B3B3);
+  static const Color textHint = Color(0xFF666666);
+  static const Color textMuted = Color(0xFF808080);
   
   // Status colors
-  static const Color success = Color(0xFF00FF88); // Green
-  static const Color error = Color(0xFFFF4757); // Red
-  static const Color warning = Color(0xFFFFA502); // Orange
-  static const Color info = Color(0xFF00D4FF); // Cyan
+  static const Color success = Color(0xFF4CAF50);
+  static const Color error = Color(0xFFF44336);
+  static const Color warning = Color(0xFFFF9800);
+  static const Color info = Color(0xFF2196F3);
+  static const Color accent = Color(0xFF00FF88);
   
-  // Gradient colors
+  // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primary, secondary],
     begin: Alignment.topLeft,
@@ -35,90 +42,105 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+  
+  static const LinearGradient cardGradient = LinearGradient(
+    colors: [cardBackground, surfaceBackground],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
 
 class AppTextStyles {
-  static TextStyle get heading1 => GoogleFonts.orbitron(
+  static const TextStyle heading1 = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
   
-  static TextStyle get heading2 => GoogleFonts.orbitron(
+  static const TextStyle heading2 = TextStyle(
     fontSize: 24,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
   
-  static TextStyle get heading3 => GoogleFonts.orbitron(
+  static const TextStyle heading3 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
   
-  static TextStyle get body1 => GoogleFonts.montserrat(
+  static const TextStyle body1 = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
   );
   
-  static TextStyle get body2 => GoogleFonts.montserrat(
+  static const TextStyle body2 = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     color: AppColors.textSecondary,
   );
   
-  static TextStyle get caption => GoogleFonts.montserrat(
+  static const TextStyle caption = TextStyle(
     fontSize: 12,
-    fontWeight: FontWeight.w300,
-    color: AppColors.textMuted,
+    fontWeight: FontWeight.normal,
+    color: AppColors.textHint,
   );
   
-  static TextStyle get button => GoogleFonts.montserrat(
+  static const TextStyle button = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
 }
 
-class AppShadows {
-  static List<BoxShadow> get primaryShadow => [
-    BoxShadow(
-      color: AppColors.primary.withOpacity(0.3),
-      blurRadius: 10,
-      offset: const Offset(0, 4),
-    ),
-  ];
-  
-  static List<BoxShadow> get cardShadow => [
-    BoxShadow(
-      color: Colors.black.withOpacity(0.3),
-      blurRadius: 8,
-      offset: const Offset(0, 2),
-    ),
-  ];
-  
-  static List<BoxShadow> get neonShadow => [
-    BoxShadow(
-      color: AppColors.primary.withOpacity(0.5),
-      blurRadius: 20,
-      spreadRadius: 2,
-    ),
-  ];
+class AppSpacing {
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 16.0;
+  static const double lg = 24.0;
+  static const double xl = 32.0;
+  static const double xxl = 48.0;
 }
 
 class AppBorderRadius {
   static const BorderRadius small = BorderRadius.all(Radius.circular(8));
   static const BorderRadius medium = BorderRadius.all(Radius.circular(12));
   static const BorderRadius large = BorderRadius.all(Radius.circular(16));
+  static const BorderRadius xl = BorderRadius.all(Radius.circular(24));
   static const BorderRadius extraLarge = BorderRadius.all(Radius.circular(24));
 }
 
-class AppSpacing {
-  static const double xs = 4;
-  static const double sm = 8;
-  static const double md = 16;
-  static const double lg = 24;
-  static const double xl = 32;
-  static const double xxl = 48;
+class AppShadows {
+  static const List<BoxShadow> cardShadow = [
+    BoxShadow(
+      color: Color(0x40000000),
+      blurRadius: 8,
+      offset: Offset(0, 2),
+    ),
+  ];
+  
+  static const List<BoxShadow> neonShadow = [
+    BoxShadow(
+      color: Color(0x4000BCD4),
+      blurRadius: 12,
+      offset: Offset(0, 0),
+    ),
+  ];
+  
+  static const List<BoxShadow> buttonShadow = [
+    BoxShadow(
+      color: Color(0x40000000),
+      blurRadius: 4,
+      offset: Offset(0, 2),
+    ),
+  ];
+  
+  static const List<BoxShadow> primaryShadow = [
+    BoxShadow(
+      color: Color(0x4000BCD4),
+      blurRadius: 10,
+      offset: Offset(0, 4),
+    ),
+  ];
 } 

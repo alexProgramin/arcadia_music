@@ -4,13 +4,17 @@ import '../../providers/auth_provider.dart';
 import '../../providers/songs_provider.dart';
 import '../../models/user.dart';
 import '../../utils/constants.dart';
+import '../../utils/app_localizations.dart';
 import '../auth/login_screen.dart';
+import '../settings/settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -41,12 +45,12 @@ class ProfileScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           // User Stats
-                          _buildUserStats(),
+                          _buildUserStats(l10n),
                           
                           const SizedBox(height: AppSpacing.lg),
                           
                           // Profile Actions
-                          _buildProfileActions(context),
+                          _buildProfileActions(context, l10n),
                           
                           const SizedBox(height: AppSpacing.lg),
                           
@@ -120,37 +124,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          
-          if (user.isAdmin) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.2),
-                borderRadius: AppBorderRadius.small,
-                border: Border.all(
-                  color: AppColors.accent,
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                'ADMIN',
-                style: AppTextStyles.caption.copyWith(
-                  color: AppColors.accent,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
-  Widget _buildUserStats() {
+  Widget _buildUserStats(AppLocalizations l10n) {
     return Consumer<SongsProvider>(
       builder: (context, songsProvider, child) {
         return Container(
@@ -165,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
               Expanded(
                 child: _buildStatItem(
                   icon: Icons.favorite,
-                  label: 'Favorites',
+                  label: l10n.get('favorites'),
                   value: '${songsProvider.favorites.length}',
                   color: AppColors.error,
                 ),
@@ -178,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
               Expanded(
                 child: _buildStatItem(
                   icon: Icons.download,
-                  label: 'Downloads',
+                  label: l10n.get('downloads'),
                   value: '${songsProvider.downloads.length}',
                   color: AppColors.success,
                 ),
@@ -220,7 +199,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileActions(BuildContext context) {
+  Widget _buildProfileActions(BuildContext context, AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
@@ -231,17 +210,22 @@ class ProfileScreen extends StatelessWidget {
         children: [
           _buildActionItem(
             icon: Icons.settings,
-            title: 'Settings',
-            subtitle: 'App preferences and configuration',
+            title: l10n.get('settings'),
+            subtitle: l10n.get('appPreferences'),
             onTap: () {
-              // TODO: Implement settings screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
             },
           ),
           _buildDivider(),
           _buildActionItem(
             icon: Icons.help_outline,
-            title: 'Help & Support',
-            subtitle: 'Get help and contact support',
+            title: l10n.get('helpSupport'),
+            subtitle: l10n.get('getHelpContact'),
             onTap: () {
               // TODO: Implement help screen
             },
@@ -249,8 +233,8 @@ class ProfileScreen extends StatelessWidget {
           _buildDivider(),
           _buildActionItem(
             icon: Icons.info_outline,
-            title: 'About',
-            subtitle: 'App version and information',
+            title: l10n.get('about'),
+            subtitle: l10n.get('appVersionInfo'),
             onTap: () {
               // TODO: Implement about screen
             },
@@ -258,9 +242,9 @@ class ProfileScreen extends StatelessWidget {
           _buildDivider(),
           _buildActionItem(
             icon: Icons.logout,
-            title: 'Sign Out',
-            subtitle: 'Sign out of your account',
-            onTap: () => _showSignOutDialog(context),
+            title: l10n.get('signOut'),
+            subtitle: l10n.get('signOutAccount'),
+            onTap: () => _showSignOutDialog(context, l10n),
             isDestructive: true,
           ),
         ],
@@ -355,7 +339,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showSignOutDialog(BuildContext context) {
+  void _showSignOutDialog(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -364,18 +348,18 @@ class ProfileScreen extends StatelessWidget {
           borderRadius: AppBorderRadius.medium,
         ),
         title: Text(
-          'Sign Out',
+          l10n.get('signOut'),
           style: AppTextStyles.heading3,
         ),
         content: Text(
-          'Are you sure you want to sign out?',
+          l10n.get('areYouSureSignOut'),
           style: AppTextStyles.body1,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              l10n.get('cancel'),
               style: AppTextStyles.body1.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -394,7 +378,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Sign Out',
+              l10n.get('signOut'),
               style: AppTextStyles.button,
             ),
           ),

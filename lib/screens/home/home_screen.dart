@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/songs_provider.dart';
 import '../../providers/audio_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/song.dart';
 import '../../utils/constants.dart';
+import '../../utils/app_localizations.dart';
 import '../../widgets/song_card.dart';
 import '../../widgets/search_bar.dart';
 import '../../widgets/genre_chips.dart';
+import '../../widgets/download_error_dialog.dart';
+import '../../services/permission_helper.dart' as PermissionService;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -44,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               // Header
-              _buildHeader(),
+              _buildHeader(l10n),
               
               // Search Bar
               Padding(
@@ -99,14 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: AppSpacing.md),
                             Text(
-                              'No songs found',
+                              l10n.get('noSongsFound'),
                               style: AppTextStyles.heading3.copyWith(
                                 color: AppColors.textSecondary,
                               ),
                             ),
                             const SizedBox(height: AppSpacing.sm),
                             Text(
-                              'Try adjusting your search or filters',
+                              l10n.get('tryAdjustingSearch'),
                               style: AppTextStyles.body2.copyWith(
                                 color: AppColors.textMuted,
                               ),
@@ -144,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Row(
@@ -175,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Text(
-                  'Discover your next favorite track',
+                  l10n.get('discoverNextFavorite'),
                   style: AppTextStyles.body2.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -219,8 +223,126 @@ class _HomeScreenState extends State<HomeScreen> {
     songsProvider.toggleFavorite(song);
   }
 
-  void _downloadSong(Song song) {
+  void _downloadSong(Song song) async {
     final songsProvider = Provider.of<SongsProvider>(context, listen: false);
-    songsProvider.downloadSong(song);
+    final l10n = AppLocalizations.of(context);
+    
+    try {
+      // Verificar permisos antes de intentar descargar
+      final hasPermissions = await PermissionService.PermissionHelper().hasStoragePermission();
+      
+      if (!hasPermissions) {
+        // Solicitar permisos automáticamente
+        final granted = await PermissionService.PermissionHelper().requestStoragePermission();
+        
+        if (!granted) {
+          // Si los permisos están permanentemente denegados, abrir configuración
+          if (await PermissionService.PermissionHelper().isPermissionPermanentlyDenied()) {
+            await PermissionService.PermissionHelper().openAppSettings();
+          }
+          
+          // Mostrar mensaje de error
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Permisos de almacenamiento requeridos. Por favor, habilita los permisos en la configuración.',
+                  style: AppTextStyles.body2.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: AppBorderRadius.medium,
+                ),
+                margin: const EdgeInsets.all(AppSpacing.md),
+                duration: const Duration(seconds: 4),
+              ),
+            );
+          }
+          return;
+        }
+      }
+      
+      // Intentar descargar la canción
+      await songsProvider.downloadSong(song);
+      
+      // Mostrar notificación de éxito
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.download_done,
+                  color: Colors.white,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.get('songDownloadedSuccessfully'),
+                    style: AppTextStyles.body2.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: AppBorderRadius.medium,
+            ),
+            margin: const EdgeInsets.all(AppSpacing.md),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      // Mostrar diálogo de error personalizado
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => DownloadErrorDialog(
+            errorMessage: e.toString(),
+            onRetry: () => _downloadSong(song),
+            onOpenSettings: () {
+              Navigator.of(context).pop();
+              _openAppSettings();
+            },
+          ),
+        );
+      }
+    }
+  }
+
+
+
+  void _openAppSettings() async {
+    try {
+      await PermissionService.PermissionHelper().openAppSettings();
+    } catch (e) {
+      // Si no se puede abrir la configuración, mostrar un mensaje
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Por favor, ve a Configuración > Aplicaciones > Arcadia Music > Permisos',
+              style: AppTextStyles.body2.copyWith(
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: AppColors.warning,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: AppBorderRadius.medium,
+            ),
+            margin: const EdgeInsets.all(AppSpacing.md),
+          ),
+        );
+      }
+    }
   }
 } 

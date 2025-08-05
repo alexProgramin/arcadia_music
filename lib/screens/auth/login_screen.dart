@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/constants.dart';
+import '../../utils/app_localizations.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -36,7 +36,6 @@ class _LoginScreenState extends State<LoginScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -44,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen>
       parent: _animationController,
       curve: Curves.easeOutCubic,
     ));
-    
     _animationController.forward();
   }
 
@@ -58,6 +56,8 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -68,12 +68,11 @@ class _LoginScreenState extends State<LoginScreen>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Logo and Title
@@ -111,9 +110,9 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: AppSpacing.xxl),
-                      
+
                       // Email Field
                       Container(
                         decoration: BoxDecoration(
@@ -126,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen>
                           keyboardType: TextInputType.emailAddress,
                           style: AppTextStyles.body1,
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: l10n.get('email'),
                             labelStyle: AppTextStyles.body2,
                             prefixIcon: const Icon(
                               Icons.email_outlined,
@@ -141,18 +140,18 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
+                              return l10n.get('pleaseEnterEmail');
                             }
                             if (!value.contains('@')) {
-                              return 'Please enter a valid email';
+                              return l10n.get('pleaseEnterValidEmail');
                             }
                             return null;
                           },
                         ),
                       ),
-                      
+
                       const SizedBox(height: AppSpacing.md),
-                      
+
                       // Password Field
                       Container(
                         decoration: BoxDecoration(
@@ -165,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen>
                           obscureText: _obscurePassword,
                           style: AppTextStyles.body1,
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            labelText: l10n.get('password'),
                             labelStyle: AppTextStyles.body2,
                             prefixIcon: const Icon(
                               Icons.lock_outlined,
@@ -193,18 +192,18 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
+                              return l10n.get('pleaseEnterPassword');
                             }
                             if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                              return l10n.get('passwordMinLength');
                             }
                             return null;
                           },
                         ),
                       ),
-                      
+
                       const SizedBox(height: AppSpacing.lg),
-                      
+
                       // Login Button
                       Consumer<AuthProvider>(
                         builder: (context, authProvider, child) {
@@ -248,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen>
                                         ),
                                       )
                                     : Text(
-                                        'LOGIN',
+                                        l10n.get('login'),
                                         style: AppTextStyles.button,
                                       ),
                               ),
@@ -256,45 +255,9 @@ class _LoginScreenState extends State<LoginScreen>
                           );
                         },
                       ),
-                      
-                      const SizedBox(height: AppSpacing.md),
-                      
-                      // Google Login Button
-                      Consumer<AuthProvider>(
-                        builder: (context, authProvider, child) {
-                          return OutlinedButton.icon(
-                            onPressed: authProvider.isLoading
-                                ? null
-                                : _handleGoogleLogin,
-                            icon: const Icon(
-                              Icons.g_mobiledata,
-                              color: AppColors.primary,
-                            ),
-                            label: Text(
-                              'Continue with Google',
-                              style: AppTextStyles.button.copyWith(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.primary,
-                              side: const BorderSide(
-                                color: AppColors.primary,
-                                width: 2,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: AppSpacing.md,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: AppBorderRadius.medium,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      
+
                       const SizedBox(height: AppSpacing.lg),
-                      
+
                       // Error Message
                       Consumer<AuthProvider>(
                         builder: (context, authProvider, child) {
@@ -321,15 +284,15 @@ class _LoginScreenState extends State<LoginScreen>
                           return const SizedBox.shrink();
                         },
                       ),
-                      
+
                       const SizedBox(height: AppSpacing.lg),
-                      
+
                       // Register Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account? ",
+                            l10n.get('dontHaveAccount'),
                             style: AppTextStyles.body2,
                           ),
                           GestureDetector(
@@ -342,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen>
                               );
                             },
                             child: Text(
-                              'Register',
+                              l10n.get('register'),
                               style: AppTextStyles.body2.copyWith(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -371,9 +334,4 @@ class _LoginScreenState extends State<LoginScreen>
       );
     }
   }
-
-  void _handleGoogleLogin() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.signInWithGoogle();
-  }
-} 
+}

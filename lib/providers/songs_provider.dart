@@ -128,20 +128,45 @@ class SongsProvider extends ChangeNotifier {
 
   Future<void> downloadSong(Song song) async {
     try {
+      // Verificar si ya está descargado
+      final isAlreadyDownloaded = await isSongDownloaded(song.id);
+      if (isAlreadyDownloaded) {
+        // Si ya está descargado, solo agregar a la base de datos si no existe
+        final isInDatabase = await SupabaseService.isDownloaded(_currentUserId, song.id);
+        if (!isInDatabase) {
+          await SupabaseService.addToDownloads(_currentUserId, song.id);
+          await loadDownloads();
+        }
+        return;
+      }
+
+      // Descargar el archivo
       final downloadPath = await DownloadService().downloadSong(song);
       if (downloadPath != null) {
+        // Agregar a la base de datos
         await SupabaseService.addToDownloads(_currentUserId, song.id);
         await loadDownloads();
+        
+        // Mostrar notificación de éxito
+        _showSuccessNotification('Canción descargada exitosamente');
       }
     } catch (e) {
       _setError(e.toString());
+      // Mostrar notificación de error
+      _showErrorNotification(e.toString());
+      rethrow;
     }
   }
 
   Future<void> removeDownload(Song song) async {
     try {
+      // Eliminar archivo local
       await DownloadService().deleteDownloadedSong(song.id);
+      
+      // Eliminar de la base de datos
       await SupabaseService.removeFromDownloads(_currentUserId, song.id);
+      
+      // Recargar descargas
       await loadDownloads();
     } catch (e) {
       _setError(e.toString());
@@ -162,7 +187,13 @@ class SongsProvider extends ChangeNotifier {
     if (_currentUserId.isEmpty) return false;
     
     try {
-      return await SupabaseService.isDownloaded(_currentUserId, songId);
+      // Verificar en la base de datos
+      final isInDatabase = await SupabaseService.isDownloaded(_currentUserId, songId);
+      
+      // Verificar archivo local
+      final isLocalFile = await DownloadService().isSongDownloaded(songId);
+      
+      return isInDatabase && isLocalFile;
     } catch (e) {
       return false;
     }
@@ -181,5 +212,15 @@ class SongsProvider extends ChangeNotifier {
   void _clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  void _showSuccessNotification(String message) {
+    // Esta función será llamada desde la UI para mostrar notificaciones
+    // La implementación real se hará en el widget que use este provider
+  }
+
+  void _showErrorNotification(String message) {
+    // Esta función será llamada desde la UI para mostrar notificaciones
+    // La implementación real se hará en el widget que use este provider
   }
 } 

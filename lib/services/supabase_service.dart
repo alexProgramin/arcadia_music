@@ -20,10 +20,12 @@ class SupabaseService {
   static Future<AuthResponse> signUp({
     required String email,
     required String password,
+    String? name,
   }) async {
     return await client.auth.signUp(
       email: email,
       password: password,
+      data: name != null ? {'name': name} : null,
     );
   }
 
@@ -37,12 +39,13 @@ class SupabaseService {
     );
   }
 
-  static Future<void> signInWithGoogle() async {
-    await client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: 'io.supabase.flutter://login-callback/',
-    );
-  }
+static Future<void> signInWithGoogle() async {
+  await client.auth.signInWithOAuth(
+    OAuthProvider.google,
+    redirectTo: 'com.arcadia_music://login-callback/', // ← ¡EXACTAMENTE ASÍ!
+  );
+}
+
 
   static Future<void> signOut() async {
     await client.auth.signOut();
@@ -57,7 +60,6 @@ class SupabaseService {
       email: authUser.email ?? '',
       name: authUser.userMetadata?['name'],
       avatarUrl: authUser.userMetadata?['avatar_url'],
-      isAdmin: false, // Default value, can be updated from profile
       createdAt: DateTime.tryParse(authUser.createdAt) ?? DateTime.now(),
     );
   }

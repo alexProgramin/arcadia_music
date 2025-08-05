@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'services/supabase_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/songs_provider.dart';
 import 'providers/audio_provider.dart';
+import 'providers/language_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'utils/constants.dart';
+import 'utils/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,21 +30,37 @@ class ArcadiaMusicApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => SongsProvider()),
         ChangeNotifierProvider(create: (_) => AudioProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
-      child: MaterialApp(
-        title: 'Arcadia Music',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          fontFamily: 'Montserrat',
-          scaffoldBackgroundColor: AppColors.background,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.cardBackground,
-            foregroundColor: AppColors.textPrimary,
-            elevation: 0,
-          ),
-        ),
-        home: const AuthWrapper(),
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, child) {
+          return MaterialApp(
+            title: 'Arcadia Music',
+            debugShowCheckedModeBanner: false,
+            locale: languageProvider.currentLocale,
+            localizationsDelegates: [
+              const AppLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('es'),
+            ],
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              fontFamily: 'Montserrat',
+              scaffoldBackgroundColor: AppColors.background,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: AppColors.cardBackground,
+                foregroundColor: AppColors.textPrimary,
+                elevation: 0,
+              ),
+            ),
+            home: const AuthWrapper(),
+          );
+        },
       ),
     );
   }

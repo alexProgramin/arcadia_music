@@ -148,7 +148,7 @@ CREATE POLICY "Users can delete own downloads" ON downloads
 3. Configura:
    - **Client ID**: Tu Google OAuth Client ID
    - **Client Secret**: Tu Google OAuth Client Secret
-4. En **Redirect URLs** agrega: `io.supabase.flutter://login-callback/`
+4. En **Redirect URLs** agrega: `com.arcadia_music://login-callback`
 
 ### 3. Crear un Usuario Administrador
 

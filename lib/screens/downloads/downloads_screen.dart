@@ -5,6 +5,7 @@ import '../../providers/audio_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/song.dart';
 import '../../utils/constants.dart';
+import '../../utils/app_localizations.dart';
 import '../../widgets/song_card.dart';
 
 class DownloadsScreen extends StatefulWidget {
@@ -30,6 +31,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -39,7 +42,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           child: Column(
             children: [
               // Header
-              _buildHeader(),
+              _buildHeader(l10n),
               
               // Downloads List
               Expanded(
@@ -139,7 +142,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Row(
